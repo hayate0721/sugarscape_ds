@@ -1,0 +1,15 @@
+{
+  "seed": -1, 
+  "timesteps": 10000,
+  "headlessMode": true,
+  "logfile": "output.json",
+  "logfileFormat": "json",
+  "agentDecisionModels": ["egoistTop"],
+  "startingAgents": 250,
+  "environmentHeight": 50,
+  "environmentWidth": 50,
+  "agentStartingSugar": [10, 40],
+  "agentSugarMetabolism": [1, 4],
+  "agentStartingSpice": [10, 40],
+  "agentSpiceMetabolism": [1, 4]
+}
