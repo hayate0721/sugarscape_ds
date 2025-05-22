@@ -1,6 +1,7 @@
 # Hayate Saito
 import os
 import json
+import boto3
 
 
 # this is the list of models that we will be using
@@ -43,3 +44,13 @@ with open("config.json", "w") as f:
 
 # run the program
 os.system("python3 sugarscape.py --conf config.json")
+
+
+# add the output file to S3 bucket
+bucket_name = "sugarscape-100-jobs"
+s3 = boto3.client("s3", region_name="us-east-1")
+try:
+    s3.upload_file(config["sugarscapeOptions"]["logfile"], bucket_name, f"{model}/seed_{seed}.json")
+    print(f"Uploaded to s3://{bucket_name}/{model}/seed_{seed}.json")
+except Exception as e:
+    print(f"Upload failed: {e}")
