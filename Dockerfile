@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . /app
 
 # Install necessary Python package
-RUN pip install matplotlib
+RUN pip install matplotlib boto3
 
 # when I start the container, it will run the following python script
 ENTRYPOINT ["python3", "run_sugarscape.py"]
