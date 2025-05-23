@@ -26,7 +26,7 @@ seed = index % 100
 
 
 # we load our existing config file for each job
-with open("new_config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
 
@@ -34,7 +34,9 @@ with open("new_config.json") as f:
 config["sugarscapeOptions"]["agentDecisionModels"] = [model]
 config["sugarscapeOptions"]["seed"] = seed
 config["sugarscapeOptions"]["logfile"] = f"output_{model}_seed_{seed}.json"
-
+config["sugarscapeOptions"]["keepAlivePostExtinction"] = True
+config["sugarscapeOptions"]["headlessMode"] = True
+config["sugarscapeOptions"]["timesteps"] = 100
 
 
 # we save new config file
@@ -44,7 +46,6 @@ with open("config.json", "w") as f:
 
 # run the program
 os.system("python3 sugarscape.py --conf config.json")
-
 
 # add the output file to S3 bucket
 bucket_name = "sugarscape-100-jobs"
