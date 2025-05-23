@@ -34,9 +34,8 @@ with open("config.json") as f:
 config["sugarscapeOptions"]["agentDecisionModels"] = [model]
 config["sugarscapeOptions"]["seed"] = seed
 config["sugarscapeOptions"]["logfile"] = f"output_{model}_seed_{seed}.json"
-config["sugarscapeOptions"]["keepAlivePostExtinction"] = True
 config["sugarscapeOptions"]["headlessMode"] = True
-config["sugarscapeOptions"]["timesteps"] = 100
+config["sugarscapeOptions"]["timesteps"] = 5000
 
 
 # we save new config file
