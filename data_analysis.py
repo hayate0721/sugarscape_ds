@@ -11,6 +11,7 @@ s3_config = Config(read_timeout=120, retries={'max_attempts':10})
 
 # the bucket where there are all output files are stored
 bucket_name = "sugarscape-100-jobs"
+
 model_folders = [
     "altruistBinary", "altruistTop", "benthamBinary", "benthamTop",
     "egoistBinary", "egoistTop", "negativeBentham", "none", "rawSugarscape"
@@ -53,3 +54,66 @@ print(f"we loaded {len(df)} rows from s3 bucket!")
 
 
 
+
+# ----- this is analyzing part! -----
+
+# we get only the last entries per seed per model
+final_timesteps = (
+    df.sort_values("timestep")
+    .groupby(["model", "seed"])
+    .tail(1)
+    .reset_index(drop=True)
+)
+
+final_timesteps = final_timesteps.sort_values(by=["model", "seed"]).reset_index(drop=True)
+
+output_dir = "analysis_outputs"
+os.makedirs(output_dir, exist_ok=True)
+
+
+# we save it to CSV
+final_csv_path = os.path.join(output_dir, "summary_final_timesteps.csv")
+final_timesteps.to_csv(final_csv_path, index=False)
+print("we saved final timestep summary to csv file for you!")
+
+# Boxplot: Gini Coefficient by model
+plt.figure(figsize=(12, 6))
+final_timesteps.boxplot(column="giniCoefficient", by="model")
+plt.title("Final Gini Coefficient by Model")
+plt.suptitle("")
+plt.xlabel("Model")
+plt.ylabel("Gini Coefficient")
+plt.xticks(rotation=45)
+plt.tight_layout()
+gini_plot_path = os.path.join(output_dir, "gini_by_model.png")
+plt.savefig(gini_plot_path)
+print("Saved boxplot to gini_by_model.png")
+
+# Boxplot: Final Wealth by model
+plt.figure(figsize=(12, 6))
+final_timesteps.boxplot(column="meanWealth", by="model")
+plt.title("Final Mean Wealth by Model")
+plt.suptitle("")
+plt.xlabel("Model")
+plt.ylabel("Mean Wealth")
+plt.xticks(rotation=45)
+plt.tight_layout()
+wealth_plot_path = os.path.join(output_dir, "wealth_by_model.png")
+plt.savefig(wealth_plot_path)   
+print("Saved boxplot to wealth_by_model.png")
+
+# Line Plot: Average Gini over time per model
+plt.figure(figsize=(12, 6))
+for model in df["model"].unique():
+    model_df = df[df["model"] == model]
+    gini_over_time = model_df.groupby("timestep")["giniCoefficient"].mean()
+    plt.plot(gini_over_time.index, gini_over_time.values, label=model)
+
+plt.title("Average Gini Coefficient Over Time")
+plt.xlabel("Timestep")
+plt.ylabel("Average Gini Coefficient")
+plt.legend()
+plt.tight_layout()
+gini_lineplot_path = os.path.join(output_dir, "gini_over_time.png")
+plt.savefig(gini_lineplot_path) 
+print("Saved line plot to gini_over_time.png")
