@@ -1,4 +1,92 @@
-SUGARSCAPE
+# Sugarscape Simulation 
+
+##  Overview
+
+This project scales up the **Sugarscape societal simulation** to run in parallel using **AWS Batch** and **Docker**. The goal is to run 900 simulations (9 models × 100 random seeds) to analyze social outcomes like fairness (Gini coefficient), wealth, and happiness.
+
+---
+
+## ⚙️ Technologies Used
+
+- Python 
+- Docker
+- AWS Batch
+- AWS Elastic Container Registry (ECR)
+- AWS S3
+- pandas, matplotlib
+
+---
+
+## 🏗️ Project Structure
+
+```
+.
+├── sugarscape.py                 # Simulation source code
+├── launch_sugarscape.py         # Script that sets seed and runs one simulation
+├── Dockerfile                   # Docker container setup
+├── data_analysis.py             # Script to download + analyze results
+├── analysis_outputs/            # Charts and final summary CSVs
+```
+
+---
+
+##  How to Run Simulations
+
+### 1. Build and Push Docker Image
+
+```bash
+docker build -t sugarscape .
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin <your-ecr-url>
+docker tag sugarscape <your-ecr-url>:latest
+docker push <your-ecr-url>:latest
+```
+
+### 2. Submit Job Array via AWS Batch
+
+Create a job definition that uses your Docker image, and submit an **array job** with size 100 for each model (9 total arrays).  
+Each job uses `AWS_BATCH_JOB_ARRAY_INDEX` as the simulation seed.
+
+---
+
+## 🧪 Output
+
+- Each job writes a file like: `output_seed_17.json` to S3
+- Each file logs simulation data at every timestep (~10,000 rows)
+
+---
+
+## 📊 How to Analyze Results
+
+Run the `data_analysis.py` script:
+
+```bash
+python3 data_analysis.py
+```
+
+This will:
+- Download all JSON files from S3
+- Combine the data into one large table (`all_records.csv`)
+- Extract final timestep stats (`summary_final_timesteps.csv`)
+- Create visualizations:
+  - `gini_by_model.png`
+  - `wealth_by_model.png`
+  - `gini_over_time.png`
+
+All saved to the `analysis_outputs/` folder.
+
+---
+
+## 📝 Example Metrics Collected
+
+- `giniCoefficient` – measures fairness
+- `meanWealth` – average agent wealth
+- `meanHappiness`, `agentDeaths`, etc.
+
+---
+
+## What is Sugarscape?
+
 
 Python implementation of the Sugarscape agent-based computational model introduced in Growing Artificial Societies (1996) by Epstein and Axtell.
 
