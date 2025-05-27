@@ -1,72 +1,20 @@
-CONFIG = config.json
-DATACHECK = data/data.complete
-LOGS = log.csv log.json
-PLOT = plot.py
-PLOTCHECK = plots/plots.complete
-RUN = run.py
-SCREENSHOTS = *.ps
+# Makefile for Sugarscape Simulation Project
 
-DATASET = $(DATACHECK) \
-		data/*[[:digit:]]*.config \
-		data/*.csv \
-		data/*.json \
-		data/*.sh
+IMAGE_NAME=sugarscape
+ECR_URL=851725177357.dkr.ecr.us-east-1.amazonaws.com/sugarscape
 
-PLOTS = $(PLOTCHECK) \
-		plots/*.pdf
+.PHONY: build push analyze clean
 
-CLEAN = $(DATASET) \
-		$(LOGS) \
-		$(PLOTS) \
-		$(SCREENSHOTS)
+build:
+	docker build -t $(IMAGE_NAME) .
 
-# Change to python3 (or other alias) if needed
-PYTHON = python
-SUGARSCAPE = sugarscape.py
+push:
+	docker tag $(IMAGE_NAME) $(ECR_URL):latest
+	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 851725177357.dkr.ecr.us-east-1.amazonaws.com
+	docker push $(ECR_URL):latest
 
-# Check for local Python aliases
-PYCHECK = $(shell which python > /dev/null; echo $$?)
-PY3CHECK = $(shell which python3 > /dev/null; echo $$?)
-
-$(DATACHECK):
-	cd data && $(PYTHON) $(RUN) --conf ../$(CONFIG) --mode csv
-	touch $(DATACHECK)
-
-$(PLOTCHECK): $(DATACHECK)
-	cd plots && $(PYTHON) $(PLOT) --path ../data/ --conf ../$(CONFIG)
-	touch $(PLOTCHECK)
-
-all: $(DATACHECK) $(PLOTCHECK)
-
-data: $(DATACHECK)
-
-plots: $(PLOTCHECK)
-
-seeds:
-	cd data && $(PYTHON) $(RUN) --conf ../$(CONFIG) --mode csv --seeds
-
-setup:
-	@echo "Checking for local Python installation."
-ifeq ($(PY3CHECK), 0)
-	@echo "Found alias for Python."
-	sed -i 's/PYTHON = python$$/PYTHON = python3/g' Makefile
-	sed -i 's/"python"/"python3"/g' $(CONFIG)
-else ifneq ($(PYCHECK), 0)
-	@echo "Could not find a local Python installation."
-	@echo "Please update the Makefile and configuration file manually."
-else
-	@echo "This message should never be reached."
-endif
-
-test:
-	$(PYTHON) $(SUGARSCAPE) --conf $(CONFIG)
+analyze:
+	python3 data_analysis.py
 
 clean:
-	rm -rf $(CLEAN) || true
-
-lean:
-	rm -rf $(PLOTS) || true
-
-.PHONY: all clean data lean plots setup
-
-# vim: set noexpandtab tabstop=4:
+	rm -rf results_from_s3 analysis_outputs all_records.csv summary_final_timesteps.csv
