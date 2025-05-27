@@ -34,13 +34,13 @@ This project scales up the **Sugarscape societal simulation** to run in parallel
 
 ### 1. Build and Push Docker Image
 
-```bash
+
 docker build -t sugarscape .
 aws ecr get-login-password --region us-east-1 | \
 docker login --username AWS --password-stdin <your-ecr-url>
 docker tag sugarscape <your-ecr-url>:latest
 docker push <your-ecr-url>:latest
-```
+
 
 ### 2. Submit Job Array via AWS Batch
 
@@ -60,9 +60,9 @@ Each job uses `AWS_BATCH_JOB_ARRAY_INDEX` as the simulation seed.
 
 Run the `data_analysis.py` script:
 
-```bash
+
 python3 data_analysis.py
-```
+
 
 This will:
 - Download all JSON files from S3
