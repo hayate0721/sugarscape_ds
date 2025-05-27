@@ -6,7 +6,7 @@ This project scales up the **Sugarscape societal simulation** to run in parallel
 
 ---
 
-## ⚙️ Technologies Used
+## Technologies Used
 
 - Python 
 - Docker
@@ -17,11 +17,11 @@ This project scales up the **Sugarscape societal simulation** to run in parallel
 
 ---
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```
 .
-├── sugarscape.py                 # Simulation source code
+├── sugarscape.py                # Simulation source code
 ├── launch_sugarscape.py         # Script that sets seed and runs one simulation
 ├── Dockerfile                   # Docker container setup
 ├── data_analysis.py             # Script to download + analyze results
@@ -49,14 +49,14 @@ Each job uses `AWS_BATCH_JOB_ARRAY_INDEX` as the simulation seed.
 
 ---
 
-## 🧪 Output
+## Output
 
 - Each job writes a file like: `output_seed_17.json` to S3
 - Each file logs simulation data at every timestep (~10,000 rows)
 
 ---
 
-## 📊 How to Analyze Results
+## How to Analyze Results
 
 Run the `data_analysis.py` script:
 
@@ -77,7 +77,7 @@ All saved to the `analysis_outputs/` folder.
 
 ---
 
-## 📝 Example Metrics Collected
+## Example Metrics Collected
 
 - `giniCoefficient` – measures fairness
 - `meanWealth` – average agent wealth
