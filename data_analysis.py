@@ -17,12 +17,6 @@ model_folders = [
     "egoistBinary", "egoistTop", "negativeBentham", "none", "rawSugarscape"
 ]
 
-local_folder = "results_from_s3"
-
-# createing local folder to store all files
-if os.path.exists(local_folder):
-    shutil.rmtree(local_folder)
-os.makedirs(local_folder)
 
 # connect to S3 in the us-east-1 region
 s3 = boto3.client("s3", region_name="us-east-1", config=s3_config)
