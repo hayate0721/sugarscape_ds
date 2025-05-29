@@ -16,7 +16,7 @@ This project scales up the **Sugarscape societal simulation** to run in parallel
 - pandas, matplotlib
 
 
-📄 [View architecture diagram (PDF)](sugarscape.png)
+![Architecture Diagram](sugarscape.png)
 ---
 
 ##  Project Structure
