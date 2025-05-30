@@ -17,6 +17,14 @@ model_folders = [
     "egoistBinary", "egoistTop", "negativeBentham", "none", "rawSugarscape"
 ]
 
+# local folder where we store files
+local_folder = "results_from_s3"
+
+# createing local folder to store all files
+if os.path.exists(local_folder):
+    shutil.rmtree(local_folder)
+os.makedirs(local_folder)
+
 
 # connect to S3 in the us-east-1 region
 s3 = boto3.client("s3", region_name="us-east-1", config=s3_config)
@@ -35,6 +43,16 @@ for model in model_folders:
             continue
         object_data = s3.get_object(Bucket=bucket_name, Key=key)
         content = object_data["Body"].read()
+
+        # Save JSON to local disk
+        model_dir = os.path.join(local_folder, model)
+        os.makedirs(model_dir, exist_ok=True)
+        filename = os.path.basename(key)
+        local_path = os.path.join(model_dir, filename)
+        with open(local_path, "wb") as f:
+            f.write(content)
+
+        
         records = json.loads(content)
         # each record states which model it belongs to
         for r in records:
